@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perdue Team Yard Check</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <div class="header-left">
+          <img
+            src="Stevens LOGO.png"
+            alt="Stevens Transport logo"
+            class="logo-image"
+          />
+          <div class="tagline">
+            <span class="tagline-bracket">[</span>
+            DRIVER FOCUSED. PEOPLE DRIVEN.
+            <span class="tagline-bracket">]</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <label class="meta-line">
+            <span>Date/Time:</span>
+            <input type="text" id="date" class="meta-input" />
+            <span class="meta-slash">/</span>
+            <input type="text" id="time" class="meta-input" />
+          </label>
+          <label class="meta-line">
+            <span>Truck:</span>
+            <input type="text" id="truck" class="meta-input" />
+          </label>
+          <label class="meta-line">
+            <span>Trip:</span>
+            <input type="text" id="trip" class="meta-input" />
+          </label>
+          <label class="meta-line">
+            <span>Location:</span>
+            <input
+              type="text"
+              id="location"
+              class="meta-input"
+              list="locationOptions"
+            />
+          </label>
+        </div>
+      </header>
+
+      <h1>Perdue Team Yard Check</h1>
+
+      <datalist id="locationOptions">
+        <option value="Perry (PFPE)"></option>
+        <option value="Lewiston (LPILE)"></option>
+        <option value="Cromwell (PICR1)"></option>
+        <option value="Bridgewater (PERBR1)"></option>
+        <option value="Georgetown (PFGE)"></option>
+        <option value="Accomac (PAIAC)"></option>
+        <option value="Prince George (MIDPG)"></option>
+        <option value="Strassburg (AMVA)"></option>
+        <option value="Concord (PFCO2)"></option>
+        <option value="Rockingham (PERRO)"></option>
+        <option value="Dillon (PERDI)"></option>
+        <option value="Monterey (PFMO)"></option>
+        <option value="Washington (PPWA8)"></option>
+        <option value="Rincon (FRSRI)"></option>
+        <option value="Milford (PPMI)"></option>
+      </datalist>
+
+      <section class="table-wrap">
+        <table id="yardCheckTable">
+          <colgroup>
+            <col class="col-trailer" />
+            <col class="col-fuel" />
+            <col class="col-combined" />
+            <col class="col-temp" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Trailer</th>
+              <th>Fuel</th>
+              <th>
+                Loaded/Empty / If <span class="red-text">"Red Tagged"</span>
+                Record issues here and report to R/R
+              </th>
+              <th>Temp</th>
+            </tr>
+          </thead>
+          <tbody id="yardCheckBody"></tbody>
+        </table>
+      </section>
+
+      <section class="actions">
+        <button id="exportWord">Export Word (.docx)</button>
+        <button id="exportExcel">Export Excel (.xlsx)</button>
+        <button id="exportTxt">Export TXT (.txt)</button>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <script src="app.js"></script>
+    <img
+      src="export-template.png"
+      alt=""
+      id="exportTemplateImage"
+      class="hidden-export-template"
+    />
+  </body>
+</html>
