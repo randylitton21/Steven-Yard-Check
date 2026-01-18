@@ -74,6 +74,10 @@ body {
   background: transparent;
 }
 
+.location-input {
+  width: 200px;
+}
+
 .meta-input#date,
 .meta-input#time {
   width: 48px;
@@ -275,6 +279,10 @@ button:hover {
   .meta-input#date,
   .meta-input#time {
     width: 44px;
+  }
+
+  .location-input {
+    width: 160px;
   }
 
   table {
