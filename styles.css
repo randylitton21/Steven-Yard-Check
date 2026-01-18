@@ -279,6 +279,7 @@ button:hover {
 
   table {
     font-size: 10px;
+    min-width: 520px;
   }
 
   thead th {
@@ -318,6 +319,23 @@ button:hover {
   .actions {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  tbody input,
+  tbody select,
+  tbody textarea {
+    font-size: 12px;
+    padding: 4px;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
   }
 }
 
