@@ -223,9 +223,11 @@ async function exportToWord() {
     Packer,
     Paragraph,
     Table,
+    TableLayoutType,
     TableRow,
     TableCell,
     TextRun,
+    UnderlineType,
     WidthType,
   } = window.docx;
   const meta = getMetaData();
@@ -244,13 +246,20 @@ async function exportToWord() {
   const tripLine = meta.trip || "________";
   const locationLine = meta.location || "________";
 
+  const underlineValue = (value, fallback) =>
+    new TextRun({
+      text: value || fallback,
+      underline: { type: UnderlineType.SINGLE },
+    });
+
   const headerTable = new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
+    width: { size: 10800, type: WidthType.DXA },
+    layout: TableLayoutType.FIXED,
     rows: [
       new TableRow({
         children: [
           new TableCell({
-            width: { size: 100, type: WidthType.PERCENTAGE },
+            width: { size: 7000, type: WidthType.DXA },
             children: [
               ...(logoData
                 ? [
@@ -259,12 +268,64 @@ async function exportToWord() {
                       children: [
                         new ImageRun({
                           data: new Uint8Array(logoData),
-                          transformation: { width: 300, height: 86 },
+                          transformation: { width: 280, height: 80 },
                         }),
                       ],
                     }),
                   ]
                 : []),
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [
+                  new TextRun({ text: "[", bold: true, color: "D11B1B" }),
+                  new TextRun({
+                    text: "DRIVER FOCUSED. PEOPLE DRIVEN.",
+                    bold: true,
+                  }),
+                  new TextRun({ text: "]", bold: true, color: "D11B1B" }),
+                ],
+              }),
+            ],
+            borders: {
+              top: { size: 0, color: "FFFFFF" },
+              bottom: { size: 0, color: "FFFFFF" },
+              left: { size: 0, color: "FFFFFF" },
+              right: { size: 0, color: "FFFFFF" },
+            },
+          }),
+          new TableCell({
+            width: { size: 3800, type: WidthType.DXA },
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.RIGHT,
+                children: [
+                  new TextRun({ text: "Date/Time: ", bold: true }),
+                  underlineValue(dateLine, "____"),
+                  new TextRun({ text: " / " }),
+                  underlineValue(timeLine, "____"),
+                ],
+              }),
+              new Paragraph({
+                alignment: AlignmentType.RIGHT,
+                children: [
+                  new TextRun({ text: "Truck: ", bold: true }),
+                  underlineValue(truckLine, "________"),
+                ],
+              }),
+              new Paragraph({
+                alignment: AlignmentType.RIGHT,
+                children: [
+                  new TextRun({ text: "Trip: ", bold: true }),
+                  underlineValue(tripLine, "________"),
+                ],
+              }),
+              new Paragraph({
+                alignment: AlignmentType.RIGHT,
+                children: [
+                  new TextRun({ text: "Location: ", bold: true }),
+                  underlineValue(locationLine, "________"),
+                ],
+              }),
             ],
             borders: {
               top: { size: 0, color: "FFFFFF" },
@@ -275,22 +336,6 @@ async function exportToWord() {
           }),
         ],
       }),
-    ],
-  });
-
-  const headerInfoLine = new Paragraph({
-    alignment: AlignmentType.CENTER,
-    children: [
-      new TextRun({ text: "Date/Time: ", bold: true }),
-      new TextRun({ text: dateLine }),
-      new TextRun({ text: " / " }),
-      new TextRun({ text: timeLine }),
-      new TextRun({ text: "    Truck: ", bold: true }),
-      new TextRun({ text: truckLine }),
-      new TextRun({ text: "    Trip: ", bold: true }),
-      new TextRun({ text: tripLine }),
-      new TextRun({ text: "    Location: ", bold: true }),
-      new TextRun({ text: locationLine }),
     ],
   });
   const titleLine = new Paragraph({
@@ -306,19 +351,19 @@ async function exportToWord() {
 
   const tableRows = [
     new TableRow({
-      height: { value: 420, rule: "exact" },
+      height: { value: 360, rule: "exact" },
       children: [
-        { text: "Trailer", width: 14 },
-        { text: "Fuel", width: 6 },
-        { text: "Loaded/Empty", width: 16 },
+        { text: "Trailer", width: 18 },
+        { text: "Fuel", width: 8 },
+        { text: "Loaded/Empty", width: 18 },
         {
           text: 'If "Red Tagged" Record issues here and report to R/R',
-          width: 56,
+          width: 48,
         },
         { text: "Temp", width: 8 },
       ].map((header) =>
         new TableCell({
-          width: { size: header.width, type: WidthType.PERCENTAGE },
+          width: { size: header.width * 108, type: WidthType.DXA },
           children: [
             new Paragraph({
               children: [new TextRun({ text: header.text, bold: true, size: 22 })],
@@ -332,17 +377,17 @@ async function exportToWord() {
         const statusColumns = getStatusColumns(row);
 
         return new TableRow({
-          height: { value: 420, rule: "exact" },
+          height: { value: 360, rule: "exact" },
           children: [
-            { text: `${index + 1}. ${row.trailer}`.trim(), width: 14 },
-            { text: row.fuel, width: 6 },
-            { text: statusColumns.loadedEmpty, width: 16 },
-            { text: statusColumns.redTagged, width: 56 },
+            { text: `${index + 1}. ${row.trailer}`.trim(), width: 18 },
+            { text: row.fuel, width: 8 },
+            { text: statusColumns.loadedEmpty, width: 18 },
+            { text: statusColumns.redTagged, width: 48 },
             { text: row.temp, width: 8 },
           ].map(
             (cell) =>
               new TableCell({
-                width: { size: cell.width, type: WidthType.PERCENTAGE },
+                width: { size: cell.width * 108, type: WidthType.DXA },
                 children: [
                   new Paragraph({
                     children: [new TextRun({ text: cell.text || "", size: 22 })],
@@ -356,10 +401,8 @@ async function exportToWord() {
   ];
 
   const table = new Table({
-    width: {
-      size: 100,
-      type: WidthType.PERCENTAGE,
-    },
+    width: { size: 10800, type: WidthType.DXA },
+    layout: TableLayoutType.FIXED,
     rows: tableRows,
   });
 
@@ -382,7 +425,7 @@ async function exportToWord() {
             margin: { top: 360, right: 360, bottom: 360, left: 360 },
           },
         },
-        children: [headerTable, headerInfoLine, titleLine, table],
+        children: [headerTable, titleLine, table],
       },
     ],
   });
