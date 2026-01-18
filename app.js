@@ -106,6 +106,100 @@ function getStatusColumns(row) {
   };
 }
 
+function buildWordHtml(logoDataUrl, meta, rows) {
+  const dateLine = meta.date || "";
+  const timeLine = meta.time || "";
+  const truckLine = meta.truck || "";
+  const tripLine = meta.trip || "";
+  const locationLine = meta.location || "";
+
+  const logoHtml = logoDataUrl
+    ? `<img src="${logoDataUrl}" style="width:260px;height:auto;display:block;margin:0 auto 4px;" />`
+    : "";
+
+  const headerHtml = `
+    <table style="width:100%;border-collapse:collapse;margin-bottom:6px;">
+      <tr>
+        <td style="width:62%;vertical-align:top;text-align:center;">
+          ${logoHtml}
+          <div style="font-weight:bold;font-size:11px;">
+            <span style="color:#d11b1b;">[</span>
+            DRIVER FOCUSED. PEOPLE DRIVEN.
+            <span style="color:#d11b1b;">]</span>
+          </div>
+        </td>
+        <td style="width:38%;vertical-align:top;font-size:12px;">
+          <div style="text-align:right;margin-bottom:4px;">
+            <span style="font-weight:bold;">Date/Time:</span>
+            <span style="border-bottom:1px solid #000;display:inline-block;min-width:90px;">${dateLine}</span>
+            /
+            <span style="border-bottom:1px solid #000;display:inline-block;min-width:70px;">${timeLine}</span>
+          </div>
+          <div style="text-align:right;margin-bottom:4px;">
+            <span style="font-weight:bold;">Truck:</span>
+            <span style="border-bottom:1px solid #000;display:inline-block;min-width:140px;">${truckLine}</span>
+          </div>
+          <div style="text-align:right;margin-bottom:4px;">
+            <span style="font-weight:bold;">Trip:</span>
+            <span style="border-bottom:1px solid #000;display:inline-block;min-width:140px;">${tripLine}</span>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-weight:bold;">Location:</span>
+            <span style="border-bottom:1px solid #000;display:inline-block;min-width:140px;">${locationLine}</span>
+          </div>
+        </td>
+      </tr>
+    </table>
+  `;
+
+  const bodyRows = rows
+    .map((row, index) => {
+      const statusColumns = getStatusColumns(row);
+      const isOdd = index % 2 === 1;
+      const bg = isOdd ? "#f2f2f2" : "#ffffff";
+      return `
+        <tr style="height:24px;background:${bg};">
+          <td style="border:1px solid #000;padding:4px 6px;width:18%;">${index + 1}. ${row.trailer || ""}</td>
+          <td style="border:1px solid #000;padding:4px 6px;width:8%;">${row.fuel || ""}</td>
+          <td style="border:1px solid #000;padding:4px 6px;width:18%;">${statusColumns.loadedEmpty || ""}</td>
+          <td style="border:1px solid #000;padding:4px 6px;width:48%;">${statusColumns.redTagged || ""}</td>
+          <td style="border:1px solid #000;padding:4px 6px;width:8%;">${row.temp || ""}</td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  return `
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+      </head>
+      <body style="font-family:'Times New Roman', Times, serif;margin:0.25in;">
+        ${headerHtml}
+        <div style="text-align:center;font-weight:bold;font-size:13px;margin:6px 0;">
+          Perdue Team Yard Check
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;">
+          <thead>
+            <tr style="height:24px;">
+              <th style="border:1px solid #000;padding:4px 6px;width:18%;">Trailer</th>
+              <th style="border:1px solid #000;padding:4px 6px;width:8%;">Fuel</th>
+              <th style="border:1px solid #000;padding:4px 6px;width:18%;">Loaded/Empty</th>
+              <th style="border:1px solid #000;padding:4px 6px;width:48%;">
+                If <span style="color:#d11b1b;">"Red Tagged"</span> Record issues here and report to R/R
+              </th>
+              <th style="border:1px solid #000;padding:4px 6px;width:8%;">Temp</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${bodyRows}
+          </tbody>
+        </table>
+      </body>
+    </html>
+  `;
+}
+
 async function getImageDataUrlFromElement(element) {
   if (!element) {
     return null;
@@ -233,11 +327,19 @@ async function exportToWord() {
   const meta = getMetaData();
   const rows = getRowsData();
   let logoData = null;
+  let logoDataUrl = null;
   try {
-    const logoDataUrl = await getLogoDataUrl();
+    logoDataUrl = await getLogoDataUrl();
     logoData = dataUrlToArrayBuffer(logoDataUrl);
   } catch (error) {
     logoData = null;
+  }
+
+  if (isMobileDevice()) {
+    const html = buildWordHtml(logoDataUrl, meta, rows);
+    const blob = new Blob([html], { type: "application/msword" });
+    await shareFileOrDownload(blob, `${getFilenameBase()}.doc`, "application/msword");
+    return;
   }
 
   const dateLine = meta.date || "____";
