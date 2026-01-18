@@ -404,6 +404,9 @@ async function exportToExcelWithLogo() {
       paperSize: 1,
       orientation: "portrait",
       margins: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5 },
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 1,
     },
   });
 
@@ -415,6 +418,7 @@ async function exportToExcelWithLogo() {
     { key: "temp", width: 10 },
   ];
 
+  worksheet.addRow([]);
   worksheet.addRow([]);
 
   const infoRow = worksheet.addRow([
@@ -454,7 +458,7 @@ async function exportToExcelWithLogo() {
   const tableEndRow = tableStartRow + ROW_COUNT;
   for (let rowIndex = tableStartRow; rowIndex <= tableEndRow; rowIndex += 1) {
     const row = worksheet.getRow(rowIndex);
-    row.height = 18;
+    row.height = 22;
     for (let colIndex = 1; colIndex <= 5; colIndex += 1) {
       const cell = row.getCell(colIndex);
       cell.border = {
@@ -472,6 +476,8 @@ async function exportToExcelWithLogo() {
       }
     }
   }
+
+  worksheet.pageSetup.printArea = `A1:E${tableEndRow}`;
 
   try {
     const logoDataUrl = await getLogoDataUrl();
