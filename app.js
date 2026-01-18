@@ -181,6 +181,23 @@ function downloadBlob(blob, filename) {
   URL.revokeObjectURL(url);
 }
 
+async function shareFileOrDownload(blob, filename, mimeType) {
+  const file = new File([blob], filename, { type: mimeType });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: filename,
+      });
+      return;
+    } catch (error) {
+      // Fall back to download if share is cancelled or fails.
+    }
+  }
+
+  downloadBlob(blob, filename);
+}
+
 async function exportToWord() {
   const {
     AlignmentType,
@@ -467,7 +484,11 @@ async function exportToExcelWithLogo() {
     type:
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
   });
-  downloadBlob(blob, `${getFilenameBase()}.xlsx`);
+  await shareFileOrDownload(
+    blob,
+    `${getFilenameBase()}.xlsx`,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
 }
 
 function exportToTxt() {
