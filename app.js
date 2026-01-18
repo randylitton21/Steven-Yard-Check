@@ -183,7 +183,8 @@ function downloadBlob(blob, filename) {
 
 async function shareFileOrDownload(blob, filename, mimeType) {
   const file = new File([blob], filename, { type: mimeType });
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+
+  if (navigator.share) {
     try {
       await navigator.share({
         files: [file],
@@ -191,11 +192,21 @@ async function shareFileOrDownload(blob, filename, mimeType) {
       });
       return;
     } catch (error) {
-      // Fall back to download if share is cancelled or fails.
+      // Continue to fallback below.
     }
   }
 
-  downloadBlob(blob, filename);
+  // iOS Safari often ignores download; open a new tab so the user can save.
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
 
 async function exportToWord() {
