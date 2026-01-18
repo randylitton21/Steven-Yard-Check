@@ -403,35 +403,34 @@ async function exportToExcelWithLogo() {
     pageSetup: {
       paperSize: 1,
       orientation: "portrait",
-      margins: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5 },
-      fitToPage: true,
-      fitToWidth: 1,
-      fitToHeight: 1,
+      margins: { left: 0.25, right: 0.25, top: 0.25, bottom: 0.25 },
+      scale: 130,
     },
   });
 
-  worksheet.columns = [
-    { key: "trailer", width: 16 },
-    { key: "fuel", width: 8 },
-    { key: "loaded", width: 16 },
-    { key: "issues", width: 48 },
-    { key: "temp", width: 10 },
-  ];
+  worksheet.properties.defaultRowHeight = 24;
 
-  worksheet.addRow([]);
-  worksheet.addRow([]);
+  worksheet.columns = [
+    { key: "trailer", width: 20 },
+    { key: "fuel", width: 8 },
+    { key: "loaded", width: 18 },
+    { key: "issues", width: 52 },
+    { key: "temp", width: 12 },
+  ];
 
   const infoRow = worksheet.addRow([
     `Date/Time: ${dateLine} / ${timeLine}    Truck: ${truckLine}    Trip: ${tripLine}    Location: ${locationLine}`,
   ]);
   worksheet.mergeCells(`A${infoRow.number}:E${infoRow.number}`);
   infoRow.alignment = { horizontal: "left" };
-  infoRow.font = { bold: true };
+  infoRow.font = { bold: true, size: 12 };
+  infoRow.height = 20;
 
   const titleRow = worksheet.addRow(["Perdue Team Yard Check"]);
   worksheet.mergeCells(`A${titleRow.number}:E${titleRow.number}`);
   titleRow.alignment = { horizontal: "center" };
-  titleRow.font = { bold: true };
+  titleRow.font = { bold: true, size: 12 };
+  titleRow.height = 20;
 
   const headerRow = worksheet.addRow([
     "Trailer",
@@ -440,8 +439,9 @@ async function exportToExcelWithLogo() {
     'If "Red Tagged" Record issues here and report to R/R',
     "Temp",
   ]);
-  headerRow.font = { bold: true };
+  headerRow.font = { bold: true, size: 11 };
   headerRow.alignment = { horizontal: "center" };
+  headerRow.height = 20;
 
   rows.forEach((row, index) => {
     const statusColumns = getStatusColumns(row);
@@ -458,7 +458,7 @@ async function exportToExcelWithLogo() {
   const tableEndRow = tableStartRow + ROW_COUNT;
   for (let rowIndex = tableStartRow; rowIndex <= tableEndRow; rowIndex += 1) {
     const row = worksheet.getRow(rowIndex);
-    row.height = 22;
+    row.height = 24;
     for (let colIndex = 1; colIndex <= 5; colIndex += 1) {
       const cell = row.getCell(colIndex);
       cell.border = {
