@@ -234,6 +234,93 @@ button:hover {
   }
 }
 
+@media (max-width: 600px) {
+  .page {
+    margin: 8px;
+    padding: 8px 10px 14px;
+  }
+
+  .header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .header-right {
+    align-items: center;
+  }
+
+  .logo-image {
+    max-width: 220px;
+  }
+
+  .tagline {
+    font-size: 10px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 14px;
+    margin: 4px 0 6px;
+  }
+
+  .meta-line {
+    font-size: 12px;
+  }
+
+  .meta-input {
+    width: 100px;
+    font-size: 12px;
+  }
+
+  .meta-input#date,
+  .meta-input#time {
+    width: 44px;
+  }
+
+  table {
+    font-size: 10px;
+  }
+
+  thead th {
+    padding: 3px 4px;
+  }
+
+  tbody td {
+    padding: 3px 4px;
+    height: 20px;
+  }
+
+  .col-trailer {
+    width: 18%;
+  }
+
+  .col-fuel {
+    width: 8%;
+  }
+
+  .col-combined {
+    width: 62%;
+  }
+
+  .col-temp {
+    width: 12%;
+  }
+
+  .row-number {
+    min-width: 14px;
+    font-size: 10px;
+  }
+
+  .trailer-cell input {
+    padding-left: 18px;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
 @media print {
   @page {
     size: letter;
