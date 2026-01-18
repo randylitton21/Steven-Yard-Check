@@ -11,6 +11,12 @@ const exportWordBtn = document.getElementById("exportWord");
 const exportExcelBtn = document.getElementById("exportExcel");
 const exportTxtBtn = document.getElementById("exportTxt");
 
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+}
+
 function buildRows() {
   const fragment = document.createDocumentFragment();
 
@@ -397,6 +403,7 @@ async function exportToExcelWithLogo() {
   const truckLine = meta.truck || "________";
   const tripLine = meta.trip || "________";
   const locationLine = meta.location || "________";
+  const isMobile = isMobileDevice();
 
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Yard Check", {
@@ -404,18 +411,18 @@ async function exportToExcelWithLogo() {
       paperSize: 1,
       orientation: "portrait",
       margins: { left: 0.25, right: 0.25, top: 0.25, bottom: 0.25 },
-      scale: 130,
+      scale: isMobile ? 260 : 200,
     },
   });
 
-  worksheet.properties.defaultRowHeight = 24;
+  worksheet.properties.defaultRowHeight = isMobile ? 38 : 32;
 
   worksheet.columns = [
-    { key: "trailer", width: 20 },
-    { key: "fuel", width: 8 },
-    { key: "loaded", width: 18 },
-    { key: "issues", width: 52 },
-    { key: "temp", width: 12 },
+    { key: "trailer", width: isMobile ? 30 : 26 },
+    { key: "fuel", width: isMobile ? 12 : 10 },
+    { key: "loaded", width: isMobile ? 26 : 22 },
+    { key: "issues", width: isMobile ? 78 : 68 },
+    { key: "temp", width: isMobile ? 16 : 14 },
   ];
 
   const infoRow = worksheet.addRow([
@@ -423,14 +430,14 @@ async function exportToExcelWithLogo() {
   ]);
   worksheet.mergeCells(`A${infoRow.number}:E${infoRow.number}`);
   infoRow.alignment = { horizontal: "left" };
-  infoRow.font = { bold: true, size: 12 };
-  infoRow.height = 20;
+  infoRow.font = { bold: true, size: isMobile ? 16 : 14 };
+  infoRow.height = isMobile ? 30 : 26;
 
   const titleRow = worksheet.addRow(["Perdue Team Yard Check"]);
   worksheet.mergeCells(`A${titleRow.number}:E${titleRow.number}`);
   titleRow.alignment = { horizontal: "center" };
-  titleRow.font = { bold: true, size: 12 };
-  titleRow.height = 20;
+  titleRow.font = { bold: true, size: isMobile ? 16 : 14 };
+  titleRow.height = isMobile ? 30 : 26;
 
   const headerRow = worksheet.addRow([
     "Trailer",
@@ -439,9 +446,9 @@ async function exportToExcelWithLogo() {
     'If "Red Tagged" Record issues here and report to R/R',
     "Temp",
   ]);
-  headerRow.font = { bold: true, size: 11 };
+  headerRow.font = { bold: true, size: isMobile ? 15 : 13 };
   headerRow.alignment = { horizontal: "center" };
-  headerRow.height = 20;
+  headerRow.height = isMobile ? 30 : 26;
 
   rows.forEach((row, index) => {
     const statusColumns = getStatusColumns(row);
@@ -458,7 +465,7 @@ async function exportToExcelWithLogo() {
   const tableEndRow = tableStartRow + ROW_COUNT;
   for (let rowIndex = tableStartRow; rowIndex <= tableEndRow; rowIndex += 1) {
     const row = worksheet.getRow(rowIndex);
-    row.height = 24;
+    row.height = isMobile ? 38 : 32;
     for (let colIndex = 1; colIndex <= 5; colIndex += 1) {
       const cell = row.getCell(colIndex);
       cell.border = {
